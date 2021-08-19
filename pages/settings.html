@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
+    <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
+    <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'"> -->
+    <link href="../public/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+    <title>Settings</title>
+  </head>
+  <body>
+    <h1>Honeycomb Config Tool</h1>
+    <div class="container">
+        <div class="mb-3">
+            <label for="honeycombapikey" class="form-label">Honeycomb API Key</label>
+            <input type="password" class="form-control" id="honeycombapikey" placeholder="*******">
+          </div>
+          <button type="button" class="btn btn-primary" onClick="saveKey">Save Key</button>
+    </div>
+    
+    <script src="../public/js/bootstrap.bundle.min.js"  crossorigin="anonymous"></script>
+  </body>
+  </body>
+</html>

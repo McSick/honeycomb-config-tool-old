@@ -1,24 +1,60 @@
 // main.js
 
 // Modules to control application life and create native browser window
-const { app, BrowserWindow } = require('electron')
+const {app, BrowserWindow, Menu, ipcMain} = require('electron')
 const path = require('path')
+const Store = require('electron-store');
+const HoneycombAPI = require('./src/HoneycombAPI.js');
+const store = new Store();
 
+
+
+let hnyapi = new HoneycombAPI(store.get('honeycomb_api_key'));
+
+ipcMain.on("saveKey", (event, args) => {
+    store.set('honeycomb_api_key', args);
+
+  });
+ipcMain.on("loadDatasets", async (e)=> {
+    let ds = await hnyapi.getDatasets();
+    e.sender.send('datasets', ds);
+});
 function createWindow () {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 1920,
+    height: 1080,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js')
     }
   })
+  var menu = Menu.buildFromTemplate([
+    {
+        label: 'File',
+        submenu: [
+            {label:'About'},
+            {label:'Settings', click() {
+                mainWindow.webContents.send("showSettings", {apikey:store.get('honeycomb_api_key')});
+            }},
+            {type:'separator'},  // Add this
+            {label:'Exit',
+            click() { 
+                app.quit() 
+            }
+         }
+        ]
+    }
+])
 
+Menu.setApplicationMenu(menu); 
+
+    
   // and load the index.html of the app.
   mainWindow.loadFile('index.html')
 
   // Open the DevTools.
-  // mainWindow.webContents.openDevTools()
+    mainWindow.webContents.openDevTools()
+    //mainWindow.webContents.send("loadSettings", {apikey: store.get('honeycomb_api_key')});
 }
 
 // This method will be called when Electron has finished

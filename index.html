@@ -1,16 +1,100 @@
 <!DOCTYPE html>
 <html>
-  <head>
+
+<head>
     <meta charset="UTF-8">
     <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
-    <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'">
+    <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
+    <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'"> -->
+    <link href="./public/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
     <title>Hello World!</title>
-  </head>
-  <body>
-    <h1>Hello World!</h1>
-    We are using Node.js <span id="node-version"></span>,
-    Chromium <span id="chrome-version"></span>,
-    and Electron <span id="electron-version"></span>.
-  </body>
+</head>
+
+<body>
+    <h1>Honeycomb Config Tool</h1>
+    <div class="container">
+        <div class="mb-3">
+
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <div class="card" style="width: 18rem;">
+                        <img src="./public/img/example.png" class="card-img-top" alt="examle">
+                        <div class="card-body">
+                            <h5 class="card-title">Test Board</h5>
+                            <p class="card-text">Some flavor on why this board is awesome</p>
+                            <a href="#" class="btn btn-primary">Deploy to Team</a>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="col">
+                    Datasets:
+                </div>
+                <div class="col">
+                    <select id="dataset-selector" class="form-select" aria-label="Default select example">
+
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="settingsModal" tabindex="-1" aria-labelledby="settingsModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="settingsModalLabel">Settings</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <label for="honeycombapikey" class="form-label">Honeycomb API Key</label>
+                        <input type="text" class="form-control" id="honeycombapikey" placeholder="*******">
+
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" onClick="saveKey()">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script src="./public/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+        <script>
+            var settingsmodel = new window.bootstrap.Modal(document.getElementById('settingsModal'))
+            if (window.api) {
+                // You can also require other files to run in this process
+                window.api.receive("showSettings", (data) => {
+                    var $keyinput = document.getElementById('honeycombapikey');
+                    $keyinput.value = data.apikey;
+                    settingsmodel.show();
+                });
+
+                function saveKey() {
+                    var $keyinput = document.getElementById('honeycombapikey');
+                    window.api.send("saveKey", $keyinput.value);
+                    settingsmodel.hide();
+                }
+                window.api.send("loadDatasets");
+                window.api.receive("datasets", (data) => {
+
+                    var $select = document.getElementById('dataset-selector');
+                    data.forEach((dataset) => {
+
+                        var opt = document.createElement('option');
+                        opt.value = dataset.slug;
+                        opt.innerHTML = dataset.name
+                        $select.appendChild(opt);
+
+
+                    });
+                });
+            }
+        </script>
+</body>
+</body>
+
 </html>

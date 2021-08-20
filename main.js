@@ -6,13 +6,24 @@ const path = require('path')
 const Store = require('electron-store');
 const HoneycombAPI = require('./src/HoneycombAPI.js');
 const store = new Store();
+const fs = require('fs');
 
+let rawdata = fs.readFileSync('./templates/dashboards/refinery.json');
+let refineryjson = JSON.parse(rawdata);
 
-
-let hnyapi = new HoneycombAPI(store.get('honeycomb_api_key'));
+let hnyapi = new HoneycombAPI({ apikey: store.get('honeycomb_api_key'), apihost: "api"});
 
 ipcMain.on("saveKey", (event, args) => {
     store.set('honeycomb_api_key', args);
+
+  });
+
+  ipcMain.on("deployBoard", async (e, dataset) => {
+
+    let stringyjson = JSON.stringify(refineryjson);
+    let replacedjson = stringyjson.replaceAll('<dataset>', dataset);
+    let response = await hnyapi.createBoard(replacedjson)
+    e.sender.send('boardDeployed', response);
 
   });
 ipcMain.on("loadDatasets", async (e)=> {
@@ -43,7 +54,20 @@ function createWindow () {
             }
          }
         ]
-    }
+    },
+    {
+      label: "Edit",
+      submenu: [
+          { label: "Undo", accelerator: "CmdOrCtrl+Z", selector: "undo:" },
+          { label: "Redo", accelerator: "Shift+CmdOrCtrl+Z", selector: "redo:" },
+          { type: "separator" },
+          { label: "Cut", accelerator: "CmdOrCtrl+X", selector: "cut:" },
+          { label: "Copy", accelerator: "CmdOrCtrl+C", selector: "copy:" },
+          { label: "Paste", accelerator: "CmdOrCtrl+V", selector: "paste:" },
+          { label: "Select All", accelerator: "CmdOrCtrl+A", selector: "selectAll:" }
+      ]}
+  
+
 ])
 
 Menu.setApplicationMenu(menu); 
@@ -53,7 +77,7 @@ Menu.setApplicationMenu(menu);
   mainWindow.loadFile('index.html')
 
   // Open the DevTools.
-    mainWindow.webContents.openDevTools()
+    //mainWindow.webContents.openDevTools()
     //mainWindow.webContents.send("loadSettings", {apikey: store.get('honeycomb_api_key')});
 }
 

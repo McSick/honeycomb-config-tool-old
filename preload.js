@@ -29,20 +29,15 @@ const {
 let loaded = false;
 contextBridge.exposeInMainWorld('api', {
   send: (channel, data) => {
-    let validChannels = ['saveKey', 'loadDatasets']
+    let validChannels = ['saveKey', 'loadDatasets', 'deployBoard']
     if (validChannels.includes(channel)) {
-      if(channel === 'saveKey') {
-        //store.set('honeycomb_api_key', data);s
-        alert(data);
-      //  hnyapi.updateKey(data);
-       
-      }
+
       ipcRenderer.send(channel, data);
       
     }
   },
   receive: (channel, func) => {
-    let validChannels = ['showSettings', 'datasets']
+    let validChannels = ['showSettings', 'datasets', 'boardDeployed']
     if (validChannels.includes(channel)) {
 
       ipcRenderer.on(channel, (event, ...args) => func(...args))

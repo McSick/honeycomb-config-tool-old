@@ -6,7 +6,6 @@
     <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
     <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
     <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'"> -->
-
     <link href="./public/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
     <link href="./public/css/sidebar.css" rel="stylesheet" crossorigin="anonymous">
     <style>
@@ -19,7 +18,7 @@
 
     <div class="wrapper">
 
-        <!-- Sidebar -->
+
         <!-- Sidebar -->
         <nav id="sidebar">
             <div class="sidebar-header">
@@ -28,11 +27,11 @@
 
             <ul class="list-unstyled components">
                 <p></p>
-                <li class="active">
-                    <a href="#">Home</a>
+                <li >
+                    <a href="./index.html">Home</a>
                 </li>
-                <li>
-                    <a href="./boards.html">Boards</a>
+                <li class="active">
+                    <a href="#">Boards</a>
                 </li>
                 <li>
                     <a href="./derivedcolumns.html">Derived Columns</a>
@@ -44,12 +43,35 @@
         </nav>
 
         <!-- Page Content -->
-        <div id="content">
+        <div id="content" >
+
+            <h1>Reusable Boards</h1>
             <div class="container">
-                <br/><br/>
+
                 <div class="row">
                     <div class="col">
-                        <p>Welcome to the Honeycomb Config Tool. This tool has some resuable configuration settings that you can apply to your account. First go to the File menu in the top left to put in a Honeycomb API Key with the correct permissions</p>
+                        <div class="card" style="width: 18rem;">
+                            <img src="./public/img/refinery.png" class="card-img-top" alt="examle">
+                            <div class="card-body">
+                                <h5 class="card-title">Refinery Health Board</h5>
+                                <p class="card-text">Stability indicators for your refinery cluster</p>
+                                <div class="mb-3">
+                                    <label for="exampleFormControlInput1" class="form-label">Refinery Dataset</label>
+                                   <select id="dataset-selector" class="form-select form-control" aria-label="Default select example">
+
+                                </select>
+                         
+                                  </div>
+                      
+                                <a href="#" class="btn btn-primary" onClick="deployBoard()" id="deploy-btn">Deploy</a>
+                                <button class="btn btn-primary" type="button" style="display:none;" disabled id="deploy-loading-btn">
+                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                    Loading...
+                                  </button>
+
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>
@@ -85,28 +107,48 @@
     </div>
     <script src="./public/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
     <script>
-        var settingsmodel = new window.bootstrap.Modal(document.getElementById('settingsModal'))
-        if (window.api) {
+        var settingsmodel = new window.bootstrap.Modal(document.getElementById('settingsModal'));
+
+            if (window.api) {
+            
             // You can also require other files to run in this process
             window.api.receive("showSettings", (data) => {
                 var $keyinput = document.getElementById('honeycombapikey');
                 $keyinput.value = data.apikey;
                 settingsmodel.show();
             });
-
+            function deployBoard() {
+                var $select = document.getElementById('dataset-selector');
+                document.getElementById('deploy-loading-btn').style.display = 'block';
+                document.getElementById('deploy-btn').style.display = 'none';
+                console.log($select.value);
+                window.api.send("deployBoard", $select.value);
+            }
+            window.api.receive("boardDeployed", (data) => { 
+                if(!data.error) {
+                    alert('Successfully created board!')
+                } else {
+                    alert(data.error);
+                }
+                document.getElementById('deploy-loading-btn').style.display = 'none';
+                document.getElementById('deploy-btn').style.display = 'block';
+            });
             function saveKey() {
                 var $keyinput = document.getElementById('honeycombapikey');
                 window.api.send("saveKey", $keyinput.value);
                 settingsmodel.hide();
             }
             window.api.send("loadDatasets");
-            window.api.receive("datasets", (data) => {
+            window.api.receive("datasets", (data) => { 
 
                 var $select = document.getElementById('dataset-selector');
+                data.sort((a, b) => {
+                    return a.name.localeCompare(b.name);
+                })
                 data.forEach((dataset) => {
 
                     var opt = document.createElement('option');
-                    opt.value = dataset.slug;
+                    opt.value = dataset.name;
                     opt.innerHTML = dataset.name
                     $select.appendChild(opt);
 
@@ -114,6 +156,8 @@
                 });
             });
         }
+
+        
     </script>
 </body>
 </body>

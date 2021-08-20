@@ -1,0 +1,124 @@
+{
+	"name": "Refinery Health",
+	"style": "visual",
+	"queries": [{
+			"dataset": "<dataset>",
+			"query": {
+				"breakdowns": [
+					"hostname"
+				],
+				"calculations": [{
+						"column": "trace_span_count_max",
+						"op": "MAX"
+					},
+					{
+						"column": "collector_peer_queue_max",
+						"op": "MAX"
+					}
+				],
+				"orders": [{
+					"column": "trace_span_count_max",
+					"op": "MAX",
+					"order": "descending"
+				}],
+				"time_range": 3600,
+				"granularity": 15
+			},
+			"query_annotation_id": "",
+			"query_style": "graph"
+		},
+		{
+			"dataset": "<dataset>",
+			"query": {
+				"breakdowns": [
+					"hostname"
+				],
+				"calculations": [{
+						"column": "incoming_router_peer",
+						"op": "HEATMAP"
+					},
+					{
+						"column": "incoming_router_span",
+						"op": "HEATMAP"
+					},
+					{
+						"column": "peer_router_span",
+						"op": "HEATMAP"
+					},
+					{
+						"column": "peer_router_dropped",
+						"op": "MAX"
+					},
+					{
+						"column": "incoming_router_dropped",
+						"op": "MAX"
+					}
+				],
+				"orders": [{
+					"column": "peer_router_dropped",
+					"op": "MAX",
+					"order": "descending"
+				}],
+				"time_range": 7200
+			},
+			"query_annotation_id": "",
+			"query_style": "graph"
+		},
+		{
+			"dataset": "<dataset>",
+			"query": {
+				"breakdowns": [
+					"hostname"
+				],
+				"calculations": [{
+						"column": "collector_peer_queue_max",
+						"op": "MAX"
+					},
+					{
+						"column": "memory_inuse",
+						"op": "MAX"
+					}
+				],
+				"orders": [{
+					"column": "collector_peer_queue_max",
+					"op": "MAX",
+					"order": "descending"
+				}],
+				"time_range": 7200
+			},
+			"query_annotation_id": "",
+			"query_style": "graph"
+		},
+		{
+			"dataset": "<dataset>",
+			"query": {
+				"calculations": [{
+						"column": "num_goroutines",
+						"op": "HEATMAP"
+					},
+					{
+						"column": "collector_incoming_queue_max",
+						"op": "HEATMAP"
+					},
+					{
+						"column": "collector_peer_queue_max",
+						"op": "HEATMAP"
+					},
+					{
+						"column": "process_uptime_seconds_log10",
+						"op": "HEATMAP"
+					},
+					{
+						"column": "process_uptime_seconds",
+						"op": "HEATMAP"
+					}
+				],
+				"time_range": 3600,
+				"granularity": 15
+			},
+			"query_annotation_id": "",
+			"query_style": "graph"
+		}
+	]
+
+}

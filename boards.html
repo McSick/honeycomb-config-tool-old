@@ -121,7 +121,7 @@
                 var $select = document.getElementById('dataset-selector');
                 document.getElementById('deploy-loading-btn').style.display = 'block';
                 document.getElementById('deploy-btn').style.display = 'none';
-                console.log($select.value);
+
                 window.api.send("deployBoard", $select.value);
             }
             window.api.receive("boardDeployed", (data) => { 

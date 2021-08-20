@@ -1,14 +1,14 @@
 // main.js
 
 // Modules to control application life and create native browser window
-const {app, BrowserWindow, Menu, ipcMain} = require('electron')
+const {app, BrowserWindow, Menu, ipcMain, nativeImage} = require('electron')
 const path = require('path')
 const Store = require('electron-store');
 const HoneycombAPI = require('./src/HoneycombAPI.js');
 const store = new Store();
 const fs = require('fs');
 
-let rawdata = fs.readFileSync('./templates/dashboards/refinery.json');
+let rawdata = fs.readFileSync(path.join(__dirname,'templates/dashboards/refinery.json'));
 let refineryjson = JSON.parse(rawdata);
 
 let hnyapi = new HoneycombAPI({ apikey: store.get('honeycomb_api_key'), apihost: "api"});
@@ -31,10 +31,12 @@ ipcMain.on("loadDatasets", async (e)=> {
     e.sender.send('datasets', ds);
 });
 function createWindow () {
+
   // Create the browser window.
   const mainWindow = new BrowserWindow({
-    width: 1920,
-    height: 1080,
+    width: 1000,
+    height: 800,
+    icon: path.join(__dirname, 'icons', 'experiment.png'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js')
     }
@@ -85,6 +87,7 @@ Menu.setApplicationMenu(menu);
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
+ 
   createWindow()
 
   app.on('activate', function () {
@@ -93,7 +96,10 @@ app.whenReady().then(() => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
 })
-
+const image = nativeImage.createFromPath(
+  path.join(__dirname, 'icons', 'experiment.png')
+);
+app.dock.setIcon(image);
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
